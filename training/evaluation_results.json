@@ -1,0 +1,26 @@
+{
+  "rent_classifier": {
+    "model_version": "rent-classifier-v1",
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "confusion_matrix": [
+      [
+        245,
+        0
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  "anomaly_detector": {
+    "model_version": "anomaly-detector-v1",
+    "samples_evaluated": 200,
+    "normal_count": 191,
+    "anomaly_count": 9,
+    "false_positive_review_rate": 0.045
+  }
+}

@@ -1,0 +1,23 @@
+# Implementation Status
+- [x] Scaffolding
+- [x] Backend config
+- [x] PostgreSQL/Alembic
+- [x] Auth/RBAC
+- [x] Tenant
+- [x] Property
+- [x] Lease
+- [x] Subscription
+- [x] Payment/Webhook
+- [x] API Keys
+- [x] Consent
+- [x] Verification
+- [x] CSV ingestion
+- [x] Payment matching
+- [x] Random Forest
+- [x] Isolation Forest
+- [x] Reports
+- [x] Email
+- [x] Admin
+- [x] Tests
+- [x] Docker
+- [x] Production deployment
