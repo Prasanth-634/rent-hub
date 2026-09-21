@@ -1,0 +1,11 @@
+{
+  "executionEnvironments": [
+    {
+      "root": "backend",
+      "extraPaths": [
+        "backend"
+      ]
+    }
+  ],
+  "pythonPath": "C:/Users/sakth/AppData/Local/Programs/Python/Python311/python.exe"
+}

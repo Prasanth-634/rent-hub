@@ -56,11 +56,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify(credentials),
       });
 
-      const json = await res.json();
+      let json: any = {};
+      try {
+        const text = await res.text();
+        json = text ? JSON.parse(text) : {};
+      } catch (e) {
+        json = { success: false, message: `Server error (${res.status}). Please ensure backend server is running.` };
+      }
+
       if (!res.ok || !json.success) {
         return {
           success: false,
-          message: json.message || json.detail?.message || 'Invalid email or password'
+          message: json.message || json.detail?.message || (typeof json.detail === 'string' ? json.detail : null) || 'Invalid email or password'
         };
       }
 
@@ -80,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { success: true };
     } catch (err: any) {
       console.error('Login error:', err);
-      return { success: false, message: 'Connection error. Please try again.' };
+      return { success: false, message: 'Connection error. Please ensure backend server is running.' };
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +102,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ id_token: firebaseIdToken }),
       });
 
-      const json = await res.json();
+      let json: any = {};
+      try {
+        const text = await res.text();
+        json = text ? JSON.parse(text) : {};
+      } catch (e) {
+        json = { success: false, message: `Server error (${res.status}). Please ensure backend server is running.` };
+      }
+
       if (!res.ok || !json.success) {
         const msg = json.message || (typeof json.detail === 'string' ? json.detail : json.detail?.message) || 'Unable to sign in with Google. Please try again.';
         return {
@@ -135,11 +149,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify(data),
       });
 
-      const json = await res.json();
+      let json: any = {};
+      try {
+        const text = await res.text();
+        json = text ? JSON.parse(text) : {};
+      } catch (e) {
+        json = { success: false, message: `Server error (${res.status}). Please ensure backend server is running.` };
+      }
+
       if (!res.ok || !json.success) {
         return {
           success: false,
-          message: json.message || json.detail || 'Registration failed'
+          message: json.message || (typeof json.detail === 'string' ? json.detail : json.detail?.message) || 'Registration failed'
         };
       }
 
