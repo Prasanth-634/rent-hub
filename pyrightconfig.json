@@ -3,8 +3,18 @@
     "backend"
   ],
   "extraPaths": [
-    "./backend"
+    "backend",
+    "C:/Users/sakth/AppData/Local/Programs/Python/Python311/Lib/site-packages"
   ],
   "pythonVersion": "3.11",
-  "pythonPath": "C:/Users/sakth/AppData/Local/Programs/Python/Python311/python.exe"
+  "pythonPlatform": "Windows",
+  "executionEnvironments": [
+    {
+      "root": "backend",
+      "extraPaths": [
+        "backend",
+        "C:/Users/sakth/AppData/Local/Programs/Python/Python311/Lib/site-packages"
+      ]
+    }
+  ]
 }
