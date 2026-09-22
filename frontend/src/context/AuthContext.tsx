@@ -19,7 +19,14 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '');
+const getApiUrl = (endpoint: string) => {
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return API_BASE_URL ? `${API_BASE_URL}${cleanEndpoint.replace('/api/v1', '')}` : cleanEndpoint;
+};
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
@@ -50,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (roleEndpoint: string, credentials: Record<string, any>) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/v1/auth/${roleEndpoint}/login`, {
+      const res = await fetch(getApiUrl(`/api/v1/auth/${roleEndpoint}/login`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
@@ -96,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginWithGoogle = async (roleEndpoint: string, firebaseIdToken: string) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/v1/auth/${roleEndpoint}/google`, {
+      const res = await fetch(getApiUrl(`/api/v1/auth/${roleEndpoint}/google`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_token: firebaseIdToken }),
@@ -143,7 +150,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (roleEndpoint: string, data: Record<string, any>) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/v1/auth/${roleEndpoint}/register`, {
+      const res = await fetch(getApiUrl(`/api/v1/auth/${roleEndpoint}/register`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -194,11 +201,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {}
 
     if (token) {
-      fetch('/api/v1/auth/logout', {
+      fetch(getApiUrl('/api/v1/auth/logout'), {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       }).catch(() => {});
     }
+
     setUser(null);
     setToken(null);
     localStorage.removeItem('rv_user');
