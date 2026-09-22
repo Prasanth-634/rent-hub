@@ -1,11 +1,10 @@
 {
-  "executionEnvironments": [
-    {
-      "root": "backend",
-      "extraPaths": [
-        "backend"
-      ]
-    }
+  "include": [
+    "backend"
   ],
+  "extraPaths": [
+    "./backend"
+  ],
+  "pythonVersion": "3.11",
   "pythonPath": "C:/Users/sakth/AppData/Local/Programs/Python/Python311/python.exe"
 }
