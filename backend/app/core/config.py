@@ -1,5 +1,7 @@
+import json
 import os
-from typing import List, Optional
+from typing import List, Optional, Union
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -16,6 +18,12 @@ class Settings(BaseSettings):
     
     # Database
     DATABASE_URL: str = "sqlite:///./rent_verification.db"
+
+    @field_validator("DATABASE_URL", mode="before")
+    def assemble_db_connection(cls, v: Optional[str]) -> str:
+        if isinstance(v, str) and v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql://", 1)
+        return v or "sqlite:///./rent_verification.db"
     
     # Redis & Celery
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -36,13 +44,28 @@ class Settings(BaseSettings):
     MODEL_DIR: str = "./ml_models"
     
     # CORS
-    CORS_ORIGINS: List[str] = [
+    CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:5173",
         "http://localhost:3000",
         "http://127.0.0.1:5173",
+        "*"
     ]
 
+    @field_validator("CORS_ORIGINS", mode="before")
+    def parse_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+        if isinstance(v, str):
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    return json.loads(v)
+                except Exception:
+                    pass
+            return [i.strip() for i in v.split(",") if i.strip()]
+        elif isinstance(v, list):
+            return v
+        return ["*"]
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
 
 
 settings = Settings()
