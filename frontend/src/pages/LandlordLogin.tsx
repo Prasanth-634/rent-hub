@@ -24,22 +24,26 @@ export function LandlordLogin() {
         const result = await signInWithPopup(auth, googleProvider);
         idToken = await result.user.getIdToken();
       } catch (fbErr: any) {
-        console.warn('Firebase Authentication Popup / COOP issue, proceeding with dev token fallback:', fbErr);
-        idToken = JSON.stringify({
-          sub: 'google-uid-landlord-001',
-          email: 'landlord@rentverify.com',
-          name: 'Apex Property Manager'
-        });
+        console.error('Firebase Authentication Error:', fbErr);
+        if (fbErr.code === 'auth/popup-closed-by-user' || fbErr.code === 'auth/cancelled-popup-request') {
+          setError('Google sign-in popup was closed before completing authentication.');
+        } else if (fbErr.code === 'auth/popup-blocked') {
+          setError('Google sign-in popup was blocked by your browser. Please allow popups.');
+        } else {
+          setError(fbErr.message || 'Google sign-in failed. Please try again.');
+        }
+        setGoogleLoading(false);
+        return;
       }
 
       const res = await loginWithGoogle('landlord', idToken);
       if (res.success) {
         navigate('/landlord/dashboard');
       } else {
-        setError(res.message || 'Unable to sign in with Google. Please try again.');
+        setError(res.message || 'Unable to sign in with Google. Please ensure your account exists.');
       }
     } catch (err: any) {
-      console.error('Firebase Authentication Error:', err);
+      console.error('Google Sign-In Exception:', err);
       setError('Google Sign-In is temporarily unavailable. Please try again.');
     } finally {
       setGoogleLoading(false);

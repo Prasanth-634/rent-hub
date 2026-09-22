@@ -1,9 +1,29 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+export const getApiBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl && envUrl.trim()) {
+    return envUrl.trim().replace(/\/+$/, '');
+  }
+  // Default to relative /api/v1 for production Vercel rewrite & Vite dev proxy
+  return '/api/v1';
+};
+
+export const getApiUrl = (endpoint: string): string => {
+  const baseUrl = getApiBaseUrl();
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+  if (cleanEndpoint.startsWith('/api/v1')) {
+    if (baseUrl.endsWith('/api/v1')) {
+      return `${baseUrl}${cleanEndpoint.substring(7)}`;
+    }
+  }
+
+  return `${baseUrl}${cleanEndpoint}`;
+};
 
 export const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -21,8 +41,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized (e.g., redirect to login)
-      localStorage.removeItem('access_token'); localStorage.removeItem('rv_token'); localStorage.removeItem('rv_user');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('rv_token');
+      localStorage.removeItem('rv_user');
     }
     return Promise.reject(error);
   }

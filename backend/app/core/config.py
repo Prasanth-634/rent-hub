@@ -45,24 +45,44 @@ class Settings(BaseSettings):
     
     # CORS
     CORS_ORIGINS: Union[List[str], str] = [
+        "https://rent-hub-mauve.vercel.app",
         "http://localhost:5173",
         "http://localhost:3000",
         "http://127.0.0.1:5173",
-        "*"
+        "http://127.0.0.1:3000"
     ]
 
     @field_validator("CORS_ORIGINS", mode="before")
     def parse_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+        default_origins = [
+            "https://rent-hub-mauve.vercel.app",
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:3000"
+        ]
+        origins: List[str] = []
         if isinstance(v, str):
             if v.startswith("[") and v.endswith("]"):
                 try:
-                    return json.loads(v)
+                    parsed = json.loads(v)
+                    origins = [str(item).strip().rstrip('/') for item in parsed if str(item).strip()]
                 except Exception:
-                    pass
-            return [i.strip() for i in v.split(",") if i.strip()]
+                    origins = [i.strip().rstrip('/') for i in v.split(",") if i.strip()]
+            else:
+                origins = [i.strip().rstrip('/') for i in v.split(",") if i.strip()]
         elif isinstance(v, list):
-            return v
-        return ["*"]
+            origins = [str(i).strip().rstrip('/') for i in v if str(i).strip()]
+
+        # Filter out wildcard '*' to comply with allow_credentials=True
+        valid_origins = [o for o in origins if o != "*"]
+        
+        # Ensure default production and local origins are present
+        for default in default_origins:
+            if default not in valid_origins:
+                valid_origins.append(default)
+
+        return valid_origins
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
