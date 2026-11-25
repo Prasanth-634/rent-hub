@@ -1,4 +1,4 @@
-# Rent Verification API — Antigravity Build Pack
+# Rent Verification API 
 
 Fixed stack:
 - Frontend: React + TypeScript + Vite + Tailwind CSS
